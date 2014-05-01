@@ -76,7 +76,10 @@ sub parseDirector{
 												if( $linkCount == 1 ) {	
 														my $guid = guid_string();
 														my $linker = lc $art->{link};
-														`wget -O datafiles/${dirPostFix}/$art->{title}.html $art->{link} | echo ${linker} >> linkDb.txt`;
+														my $title =  $art->{title};
+														$title  =~ s/[\$#@~!&*()\[\];,:?'^"`\\\/\ ]+/_/g;
+														print "\n \n \n \n \n \n" ,$art->{title} , "\n \n \n \n";
+														`wget -O datafiles/${dirPostFix}/${title}.html $art->{link} | echo ${linker} >> linkDb.txt`;
 														@existingLinks = getExistingLinkDB();
 														$alreadyPassed = "found";
 														for my $single(@existingLinks){
