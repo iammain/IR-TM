@@ -3,6 +3,11 @@ use warnings;
 
 use XML::Simple;
 use Data::Dumper;
+use List::MoreUtils 'any';
+#description cleaner modules
+use HTML::Strip;
+use File::Slurp();
+
 
 #random string generator
 use Data::GUID qw( guid_string );
@@ -12,42 +17,77 @@ use Data::GUID qw( guid_string );
 use Dictionary;
 
 
-my @sources = ("aljazeera", "itar-tass", "reuters", "ria",  "cnn", "washingtonpost", "xinhua", "rt");
+my @sources = ("cnn", "washingtonpost", "xinhua", "rt","aljazeera", "itar-tass", "reuters", "ria");
 
-
+#my @sources = ("xinhua");
 my $count = 0;
 
 foreach (@sources){
 		my $dire = "${_}";
 		parseDirector($dire);
 }
-
 sub parseDirector{
 		our $dirPostFix     = $_[0];
-		our $dir 			= "../Data/${dirPostFix}";
+		our $dir 			= "~/Desktop/datastuff/${dirPostFix}";
+
 		our @mydictionary 	= fetchDictionary();;
 		our $dictionarySize  = scalar @mydictionary;
-		our $existingLinks   = getExistingLinkDB();
-		print $dir , "\n";
+		our @existingLinks   = getExistingLinkDB();
+
+#print $dir , "\n";
 		for my $file (glob "$dir/*.txt") {
+#print "${file}", "\n";
 				my $xml = new XML::Simple(keyAttr=> []);
-				my $data = $xml->XMLin($file);
-
-				#different rules should probably apply to some feeds, On the TODO list
-
-				my $arrayz =  $data->{channel}->{item};
-
+				eval{
+						our $data = $xml->XMLin($file);
+				};if($@){
+						print $@;
+						next;
+				}
+#different rules should probably apply to some feeds, On the TODO list
+				our $arrayz =  $data->{channel}->{item};
 				for my $art (@{ $data->{channel}->{item} } ){
-						for ($count = 0; $count<$dictionarySize; $count++) {
-								#set the link to lower case, all dictionary terms are lowercase
-								if(index(lc $art->{link}, $mydictionary[$count])>=0) {
-										$X = $art->{link};
-										if( grep(/^$X$/,@existingLinks) ==0 ){
-												my $guid = guid_string();
+						my $hs         = HTML::Strip->new();
+						my $clean_text = $hs->parse( $art->{description});
 
-												`wget -O ../Data/${dirPostFix}/${guid}.html $art->{link} | echo $art->{link} >> linkDb.txt`;
-												@existingLinks = getExistingLinkDB();
+						$clean_text =~ s/[\$#@~!&*()\[\];.,:?'^"`\\\/]+//g; # remove some characters
+								$clean_text =~ s/(\b\w{1,3}\b)+//g;                 # remove 1-3 word letters
+
+								my @split_text = split(' ' , $clean_text);
+						my $alreadyPassed = "false";
+						for (@split_text){	
+								for ($count = 0; $count<$dictionarySize; $count++) {
+
+#set the link to lower case, all dictionary terms are lowercase
+										if(lc $_ eq lc  @mydictionary[$count]) {
+												$X = lc $art->{link};
+												$X =~ s/www.//g;
+												$X =~ s/"//g;
+												my $linkCount = 1;
+												for my $links(@existingLinks){
+													$links =~ s/www.//g;
+													$links =~ s/"//g;
+
+
+													if(lc $links eq lc $X){	
+														$linkCount= 0;
+													}
+												}
+												if( $linkCount == 1 ) {	
+														my $guid = guid_string();
+														my $linker = lc $art->{link};
+														`wget -O datafiles/${dirPostFix}/$art->{title}.html $art->{link} | echo ${linker} >> linkDb.txt`;
+														@existingLinks = getExistingLinkDB();
+														$alreadyPassed = "found";
+														for my $single(@existingLinks){
+																$single =~ s/[\n]//g;
+														}
+														last;	
+												}
 										}
+								}
+								if($alreadyPassed eq "found"){
+										last;
 								}
 						}
 				}
