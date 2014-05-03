@@ -83,7 +83,7 @@ sub parseDirector{
 														$date   = $art->{pubDate};	
 														$date  =~  s/[ :,]+/_/g;
 														
-														`wget -O datafiles/${dirPostFix}/${title}____${date}____${dirPostFix}.html $art->{link} | echo ${linker} >> linkDb.txt`;
+														`wget -O datafiles/${dirPostFix}/${title}____${date}____${dirPostFix}____${link}.html $art->{link} | echo ${linker} >> linkDb.txt`;
 #`echo ${linker} >> linkDb.txt`;
 														@existingLinks = getExistingLinkDB();
 														$alreadyPassed = "found";
