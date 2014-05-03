@@ -28,7 +28,7 @@ sub fetchDictionary(){
 }
 
 sub getExistingLinkDB(){
-		my $file='linkDb.txt';
+		my $file='linkDb.csv';
 		open(INFO, $file) or die("Could not open  file.");
 		my @existingLinks = ("foo");
 		foreach my $line (<INFO>)  {   
