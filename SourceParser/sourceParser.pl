@@ -3,7 +3,7 @@ use warnings;
 
 use XML::Simple;
 use Data::Dumper;
-use List::MoreUtils 'any';
+#use List::MoreUtils 'any';
 #description cleaner modules
 use HTML::Strip;
 use File::Slurp();
@@ -17,9 +17,7 @@ use Data::GUID qw( guid_string );
 use Dictionary;
 
 
-#my @sources = ("cnn", "washingtonpost", "xinhua", "rt","aljazeera", "itar-tass", "reuters", "ria");
-
-my @sources = ("rt");
+my @sources = ( "cnn", "washingtonpost", "xinhua", "rt","aljazeera", "itar-tass", "reuters", "ria");
 my $count = 0;
 
 foreach (@sources){
@@ -28,9 +26,9 @@ foreach (@sources){
 }
 sub parseDirector{
 		our $dirPostFix     = $_[0];
-		our $dir 			= "~/Desktop/datastuff/${dirPostFix}";
+		our $dir 			= "../Data/${dirPostFix}";
 
-		our @mydictionary 	= fetchDictionary();;
+		our @mydictionary 	= fetchDictionary();
 		our $dictionarySize  = scalar @mydictionary;
 		our @existingLinks   = getExistingLinkDB();
 
@@ -46,6 +44,7 @@ sub parseDirector{
 				}
 #different rules should probably apply to some feeds, On the TODO list
 				our $arrayz =  $data->{channel}->{item};
+
 				for my $art (@{ $data->{channel}->{item} } ){
 						my $hs         = HTML::Strip->new();
 						my $clean_text = $hs->parse( $art->{description});
@@ -59,15 +58,17 @@ sub parseDirector{
 								for ($count = 0; $count<$dictionarySize; $count++) {
 
 #set the link to lower case, all dictionary terms are lowercase
+
 										if(lc $_ eq lc  @mydictionary[$count]) {
 												$X = lc $art->{link};
 												$X =~ s/www.//g;
 												$X =~ s/"//g;
 												my $linkCount = 1;
 												for my $links(@existingLinks){
-													$links =~ s/www.//g;
+													$links=~ s/www.//g;
 													$links =~ s/"//g;
-
+#print $links, "\n";
+#my $d = <>;
 
 													if(lc $links eq lc $X){	
 														$linkCount= 0;
@@ -78,15 +79,18 @@ sub parseDirector{
 														my $guid = guid_string();
 														my $linker = $art->{link};
 														my $title =  $art->{title};
-														$title  =~ s/[\$#@~!&*()\[\];,:?'^"`\\\/\ ]+/_/g;
-
+														$title  =~ s/[\$#@~!&*()\[\];,:?'^"`\\\/\ ]+/ /g;
 														$date   = $art->{pubDate};	
-														$date  =~  s/[ :,]+/_/g;
-														
-														`wget -O datafiles/${dirPostFix}/${title}____${date}____${dirPostFix}____${link}.html $art->{link} | echo ${linker} >> linkDb.txt`;
+														$date  =~  s/[:,]+/-/g;
+
+my $title2name = $title;
+$title2name =~ s/ /-/g;
+my $string = "\"".${title}."\",\"".${date}."\",\"".${dirPostFix}."\",\"".${linker}."\"";
+														`wget -O ../datafiles/${dirPostFix}/${title2name}.html $art->{link} | echo "${string}" >> linkDb.csv | echo ${linker} >> linkDb.txt`;
 #`echo ${linker} >> linkDb.txt`;
 														@existingLinks = getExistingLinkDB();
 														$alreadyPassed = "found";
+
 														for my $single(@existingLinks){
 																$single =~ s/[\n]//g;
 														}
