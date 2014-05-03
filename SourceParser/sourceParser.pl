@@ -17,9 +17,9 @@ use Data::GUID qw( guid_string );
 use Dictionary;
 
 
-my @sources = ("cnn", "washingtonpost", "xinhua", "rt","aljazeera", "itar-tass", "reuters", "ria");
+#my @sources = ("cnn", "washingtonpost", "xinhua", "rt","aljazeera", "itar-tass", "reuters", "ria");
 
-#my @sources = ("xinhua");
+my @sources = ("rt");
 my $count = 0;
 
 foreach (@sources){
@@ -73,13 +73,18 @@ sub parseDirector{
 														$linkCount= 0;
 													}
 												}
+												#print Dumper($art);
 												if( $linkCount == 1 ) {	
 														my $guid = guid_string();
-														my $linker = lc $art->{link};
+														my $linker = $art->{link};
 														my $title =  $art->{title};
 														$title  =~ s/[\$#@~!&*()\[\];,:?'^"`\\\/\ ]+/_/g;
-														print "\n \n \n \n \n \n" ,$art->{title} , "\n \n \n \n";
-														`wget -O datafiles/${dirPostFix}/${title}.html $art->{link} | echo ${linker} >> linkDb.txt`;
+
+														$date   = $art->{pubDate};	
+														$date  =~  s/[ :,]+/_/g;
+														
+														`wget -O datafiles/${dirPostFix}/${title}____${date}____${dirPostFix}.html $art->{link} | echo ${linker} >> linkDb.txt`;
+#`echo ${linker} >> linkDb.txt`;
 														@existingLinks = getExistingLinkDB();
 														$alreadyPassed = "found";
 														for my $single(@existingLinks){
