@@ -34,7 +34,7 @@ sub getExistingLinkDB(){
 		foreach my $line (<INFO>)  {   
 			 push(@existingLinks, $line); 
 		}
-	@existingLinks;	
+	@existingLinks;
 }
 
 
