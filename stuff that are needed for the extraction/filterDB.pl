@@ -22,32 +22,69 @@ foreach my $line (<INFO>)  {
 				my @nouns = split(";", $line);
 				if ( index( lc @nouns[0] , lc $_) > -1){
 						my @individualTokens = split("_" , @nouns[0]);
+						my $matchfound = "false";
 						for my $individualToken(@individualTokens){
 								if ( index( lc $individualToken , lc $_) > -1){
-										if($forGephi eq "true"){
-												print @nouns[0] . ';' . @nouns[1] . "\n";
-												print @nouns[1] . ';' . @nouns[2];
-												last;
-										}else{
-												print $line;
-												last
+										for my $secondRelation(@dictionary){
+												my @secondIndividualToken = split("_" , @nouns[2]);
+												for my $secondIndividualToken(@secondIndividualToken){
+														if( index( lc $secondIndividualToken , lc $secondRelation)>-1){
+																if($forGephi eq "true"){
+																		my $newRelation ="";
+																		$newRelation = $newRelation . $_ . ';' . @nouns[1] . "\n";
+																		$newRelation = $newRelation.  @nouns[1] . ';' . $secondRelation  ."\n";
+																		print $newRelation;
+																		$matchfound = "true";
+																		last;
+																}else{
+																		print $line;
+																		last
+																}
+														}
+
+												}
+												if($matchfound eq "true"){
+													last;
+												}
 										}
+									if($matchfound eq "true"){
+										last;
+									}
+
 								}
 						}
 
 
 				}elsif(index( lc @nouns[2],lc $_) > -1){
-						my @individualTokens = split("_" , @nouns[0]);
+						my @individualTokens = split("_" , @nouns[2]);
+						my $matchfound = "false";
 						for my $individualToken(@individualTokens){
 								if ( index( lc $individualToken , lc $_) > -1){
-										if($forGephi eq "true"){
-												print @nouns[0] . ';' . @nouns[1] . "\n";
-												print @nouns[1] . ';' . @nouns[2];
-												last;
-										}else{
-												print $line;
-												last
-										}	
+										for my $secondRelation(@dictionary){
+												my @secondIndividualToken = split("_" , @nouns[0]);
+												for my $secondIndividualToken(@secondIndividualToken){
+														if( index( lc $secondIndividualToken , lc $secondRelation)>-1){
+																if($forGephi eq "true"){
+																		my $newRelation ="";
+																		$newRelation = $newRelation . $secondRelation . ';' . @nouns[1] . "\n";
+																		$newRelation = $newRelation .  @nouns[1] . ';' . $_ ."\n";
+																		print $newRelation;
+																		$matchfound = "true";
+																		last;
+																}else{
+																		print $line;
+																		last
+																}
+														}
+												}
+												if($matchfound eq "true"){
+													last;
+												}
+										}
+										if($matchfound eq "true"){
+											last;
+										}
+
 								}
 						}
 				}
