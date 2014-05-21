@@ -47,10 +47,10 @@ while( my $line = <$info>){
 		$secondnoun =~ s/_{2,}/_/g;
 		$verb =~ s/_{2,}/_/g;
 
-		print $firstnoun . ";" . $verb . "\n";
-		print $verb . ";". $secondnoun . "\n";
+#		print $firstnoun . ";" . $verb . "\n";
+#		print $verb . ";". $secondnoun . "\n";
 
-#		print $firstnoun . ";" . $verb . ";". $secondnoun . "\n";
+		print $firstnoun . ";" . $verb . ";". $secondnoun . "\n";
 
 		$i = 0;
 		while($i<10) {
