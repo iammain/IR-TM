@@ -6,15 +6,15 @@ use File::Slurp;
 my $file = "../Entities\ Dictionary/persons.csv";
 
 my $forGephi = "true";
-
-
 my $text = read_file( $file ) ;
-my $text = $text . read_file("../Entities\ Dictionary/locations.csv");
-my $text = $text . read_file("../Entities\ Dictionary/organization.csv");
+$text = $text .  read_file("../Entities\ Dictionary/organization.csv");
+$text = $text . read_file("../Entities\ Dictionary/locations.csv");
+
 $text  =~ s/["\d,]//g;
 my @dictionary = split("\n" ,$text);
-splice(@dictionary, 0, 1);
 
+
+splice(@dictionary, 0, 1);
 
 my $filepath = "../DBKnime.csv"; 
 filterRelationsOverDictionary($filepath);
@@ -50,7 +50,7 @@ sub filterRelationsOverDictionary{
 								for my $individualToken(@individualTokens){
 										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
 												for my $secondRelation(@dictionary){
-														my @secondIndividualToken = split("_" , @nouns[2]);
+														my @secondIndividualToken = split("_" , @nouns[2]);	
 														for my $secondIndividualToken(@secondIndividualToken){
 																if( index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
