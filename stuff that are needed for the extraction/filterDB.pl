@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use File::Slurp;
 
-my $file = "persons.csv";
+my $file = "../irtm entities/locations.csv";
 
 my $forGephi = "true";
 
