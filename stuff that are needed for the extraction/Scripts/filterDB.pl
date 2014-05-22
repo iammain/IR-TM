@@ -49,11 +49,15 @@ sub filterRelationsOverDictionary{
 								my $matchfound = "false";
 
 								for my $individualToken(@individualTokens){
-										if (( index( lc $individualToken , lc $_) > -1 || checkIfMatchesFullString($_, @nouns[0]))  && length($individualToken)== length($_)){
+										if (
+										((index( lc $individualToken , lc $_) > -1 && length($individualToken)==length($_))  && !checkIfMatchesFullString($_, @nouns[0]))||
+										(!(index( lc $individualToken , lc $_) > -1 && length($individualToken)==length($_))  && checkIfMatchesFullString($_, @nouns[0]))){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[2]);	
 														for my $secondIndividualToken(@secondIndividualToken){
-																if( (index( lc $secondIndividualToken , lc $secondRelation)>-1|| checkIfMatchesFullString($secondRelation, @nouns[2]) )&& length($secondIndividualToken)== length($secondRelation)){
+																if(
+	  ((index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && !checkIfMatchesFullString($secondRelation, @nouns[2]))
+	 ||   (!(index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && checkIfMatchesFullString($secondRelation, @nouns[2])) ){
 																		if($forGephi eq "true"){
 																				my $newRelation ="";
 																				$newRelation = $newRelation . $_ . ';' . $secondRelation.  ';' . @nouns[1] ."\n";
@@ -88,11 +92,16 @@ sub filterRelationsOverDictionary{
 								my @individualTokens = split("_" , @nouns[2]);
 								my $matchfound = "false";
 								for my $individualToken(@individualTokens){
-										if ( (index( lc $individualToken , lc $_) > -1 || checkIfMatchesFullString($_, @nouns[2]) )&& length($individualToken)== length($_)){
+										if (
+										((index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)) && !checkIfMatchesFullString($_, @nouns[2]))
+										||	 (!(index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)) && checkIfMatchesFullString($_, @nouns[2])) 
+										){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[0]);
 														for my $secondIndividualToken(@secondIndividualToken){
-																if( (index( lc $secondIndividualToken , lc $secondRelation)>-1 || checkIfMatchesFullString($secondRelation, @nouns[0]) ) && length($secondIndividualToken)== length($secondRelation)){
+																if( 
+				((index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && !checkIfMatchesFullString($secondRelation, @nouns[0]))				||(!(index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && checkIfMatchesFullString($secondRelation, @nouns[0]))
+																) {
 																		if($forGephi eq "true"){
 																				my $newRelation = $secondRelation .';' .$_ . ';' .  @nouns[1] ."\n";
 																				#open(FILEZ, ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
