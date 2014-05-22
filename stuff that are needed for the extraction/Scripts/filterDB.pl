@@ -47,12 +47,13 @@ sub filterRelationsOverDictionary{
 						if ( index( lc @nouns[0] , lc $_) > -1){
 								my @individualTokens = split("_" , @nouns[0]);
 								my $matchfound = "false";
+
 								for my $individualToken(@individualTokens){
-										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
+										if (( index( lc $individualToken , lc $_) > -1 || checkIfMatchesFullString($_, @nouns[0]))  && length($individualToken)== length($_)){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[2]);	
 														for my $secondIndividualToken(@secondIndividualToken){
-																if( index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)){
+																if( (index( lc $secondIndividualToken , lc $secondRelation)>-1|| checkIfMatchesFullString($secondRelation, @nouns[2]) )&& length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
 																				my $newRelation ="";
 																				$newRelation = $newRelation . $_ . ';' . @nouns[1] ."\n";
@@ -88,11 +89,11 @@ sub filterRelationsOverDictionary{
 								my @individualTokens = split("_" , @nouns[2]);
 								my $matchfound = "false";
 								for my $individualToken(@individualTokens){
-										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
+										if ( (index( lc $individualToken , lc $_) > -1 || checkIfMatchesFullString($_, @nouns[2]) )&& length($individualToken)== length($_)){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[0]);
 														for my $secondIndividualToken(@secondIndividualToken){
-																if( index( lc $secondIndividualToken , lc $secondRelation)>-1  && length($secondIndividualToken)== length($secondRelation)){
+																if( (index( lc $secondIndividualToken , lc $secondRelation)>-1 || checkIfMatchesFullString($secondRelation, @nouns[0]) ) && length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
 																				my $newRelation = $secondRelation .';' . @nouns[1] ."\n";
 																				$newRelation = $newRelation. @nouns[1] . ";" . $_ . "\n";
@@ -126,4 +127,27 @@ sub filterRelationsOverDictionary{
 		close(INFO);
 
 }
+
+
+sub checkIfMatchesFullString{
+	my $dictionaryTerm   = shift;
+	my $stringToBeTested = shift;
+	
+	my @dictionArray = split(" ", $dictionaryTerm);
+	if(scalar(@dictionArray)==1){
+		return 0;
+	}else{
+		$stringToBeTested =~ s/_/\s/g;
+		if(index(lc $stringToBeTested , lc $dictionaryTerm)) { 
+		    return 1;
+		}else{
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
+
+
 #print $text;
