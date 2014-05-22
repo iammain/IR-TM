@@ -45,7 +45,7 @@ sub filterRelationsOverDictionary{
 								my @individualTokens = split("_" , @nouns[0]);
 								my $matchfound = "false";
 								for my $individualToken(@individualTokens){
-										if ( index( lc $individualToken , lc $_) > -1){
+										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[1]);
 														for my $secondIndividualToken(@secondIndividualToken){
@@ -84,7 +84,7 @@ sub filterRelationsOverDictionary{
 								my @individualTokens = split("_" , @nouns[1]);
 								my $matchfound = "false";
 								for my $individualToken(@individualTokens){
-										if ( index( lc $individualToken , lc $_) > -1){
+										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[0]);
 														for my $secondIndividualToken(@secondIndividualToken){
