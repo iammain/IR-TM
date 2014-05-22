@@ -19,6 +19,7 @@ my $dir = "../DBKnimeSplitByRelation";
 foreach my $fp (glob("$dir/*.csv")) {
 #printf "%s\n", $fp;
 		open my $fh, "<", $fp or die "can't read open ";
+		print $fp;
 		filterRelationsOverDictionary($fp);
 
 }
@@ -33,7 +34,7 @@ sub filterRelationsOverDictionary{
 
 		my $gephiFile = $file;
 		my @File = split('/' ,$gephiFile);
-		$gephiFile = @File[1];
+		$gephiFile = @File[2];
 		$gephiFile =~ s/\.csv//g;
 
 		foreach my $line (<INFO>)  {
@@ -53,6 +54,7 @@ sub filterRelationsOverDictionary{
 																				my $newRelation ="";
 																				$newRelation = $newRelation . $_ . ';' . $secondRelation  ."\n";
 																				open(FILEZ,  ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
+																				#print $gephiFile . "\n";
 																				print FILEZ $newRelation;
 																				#print $newRelation;
 																				close FILEZ;
@@ -92,7 +94,8 @@ sub filterRelationsOverDictionary{
 																				$newRelation = $newRelation . $secondRelation .  ';' . $_ ."\n";
 																				open(FILEZ, ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
 																				print FILEZ $newRelation;
-																				#print $newRelation;
+																				#print $gephiFile . "\n";
+ 																				#print $newRelation;
 																				close FILEZ;
 																				$matchfound = "true";
 																				last;
