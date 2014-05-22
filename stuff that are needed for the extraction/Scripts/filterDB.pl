@@ -56,8 +56,7 @@ sub filterRelationsOverDictionary{
 																if( (index( lc $secondIndividualToken , lc $secondRelation)>-1|| checkIfMatchesFullString($secondRelation, @nouns[2]) )&& length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
 																				my $newRelation ="";
-																				$newRelation = $newRelation . $_ . ';' . @nouns[1] ."\n";
-																				$newRelation = $newRelation . @nouns[1] . ';' .$secondRelation . "\n";
+																				$newRelation = $newRelation . $_ . ';' . $secondRelation.  ';' . @nouns[1] ."\n";
 																				#open(FILEZ,  ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
 																				#print $gephiFile . "\n";
 																				#print FILEZ $newRelation;
@@ -95,8 +94,7 @@ sub filterRelationsOverDictionary{
 														for my $secondIndividualToken(@secondIndividualToken){
 																if( (index( lc $secondIndividualToken , lc $secondRelation)>-1 || checkIfMatchesFullString($secondRelation, @nouns[0]) ) && length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
-																				my $newRelation = $secondRelation .';' . @nouns[1] ."\n";
-																				$newRelation = $newRelation. @nouns[1] . ";" . $_ . "\n";
+																				my $newRelation = $secondRelation .';' .$_ . ';' .  @nouns[1] ."\n";
 																				#open(FILEZ, ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
 																				#print FILEZ $newRelation;
 																				#print $gephiFile . "\n";
