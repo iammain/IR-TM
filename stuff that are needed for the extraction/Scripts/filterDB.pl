@@ -21,9 +21,9 @@ filterRelationsOverDictionary($filepath);
 exit(0);
 my $dir = "../DBKnimeSplitByRelation";
 foreach my $fp (glob("$dir/*.csv")) {
-#printf "%s\n", $fp;
+
 		open my $fh, "<", $fp or die "can't read open ";
-		print $fp;
+		##print $fp;
 		filterRelationsOverDictionary($fp);
 
 }
@@ -49,27 +49,27 @@ sub filterRelationsOverDictionary{
 								my $matchfound = "false";
 
 								for my $individualToken(@individualTokens){
-										if (
-										((index( lc $individualToken , lc $_) > -1 && length($individualToken)==length($_))  && !checkIfMatchesFullString($_, @nouns[0]))||
-										(!(index( lc $individualToken , lc $_) > -1 && length($individualToken)==length($_))  && checkIfMatchesFullString($_, @nouns[0]))){
+										if ((index( lc $individualToken , lc $_) > -1 && length($individualToken)==length($_))  || checkIfMatchesFullString($_, @nouns[0])){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[2]);	
 														for my $secondIndividualToken(@secondIndividualToken){
-																if(
-	  ((index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && !checkIfMatchesFullString($secondRelation, @nouns[2]))
-	 ||   (!(index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && checkIfMatchesFullString($secondRelation, @nouns[2])) ){
+																if((index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) || checkIfMatchesFullString($secondRelation, @nouns[2])){
 																		if($forGephi eq "true"){
 																				my $newRelation ="";
 																				$newRelation = $newRelation . $_ . ';' . $secondRelation.  ';' . @nouns[1] ."\n";
+																				if(lc $secondRelation eq lc "ss" || lc $_ eq lc "ss"){
+																					print join(" ", @nouns);
+																					print "gotchea\n";
+																				}
 																				#open(FILEZ,  ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
-																				#print $gephiFile . "\n";
-																				#print FILEZ $newRelation;
-																				print $newRelation;
-																				close FILEZ;
+																				###print $gephiFile . "\n";
+																				###print FILEZ $newRelation;
+																				#print $newRelation;
+																				#close FILEZ;
 																				$matchfound= "true";
 																				last;
 																		}else{
-																				print $line;
+																				##print $line;
 																				open(my $line, '>>', "DBKnimeSplitInGephiFormat/${gephiFile}DB.csv");
 																				last
 																		}
@@ -92,28 +92,32 @@ sub filterRelationsOverDictionary{
 								my @individualTokens = split("_" , @nouns[2]);
 								my $matchfound = "false";
 								for my $individualToken(@individualTokens){
-										if (
-										((index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)) && !checkIfMatchesFullString($_, @nouns[2]))
-										||	 (!(index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)) && checkIfMatchesFullString($_, @nouns[2])) 
+										if ((index( lc $individualToken , lc $_) > -1 || length($individualToken)== length($_)) || checkIfMatchesFullString($_, @nouns[2])
 										){
 												for my $secondRelation(@dictionary){
 														my @secondIndividualToken = split("_" , @nouns[0]);
 														for my $secondIndividualToken(@secondIndividualToken){
 																if( 
-				((index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && !checkIfMatchesFullString($secondRelation, @nouns[0]))				||(!(index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) && checkIfMatchesFullString($secondRelation, @nouns[0]))
+				(index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)) || checkIfMatchesFullString($secondRelation, @nouns[0])
 																) {
+																
 																		if($forGephi eq "true"){
 																				my $newRelation = $secondRelation .';' .$_ . ';' .  @nouns[1] ."\n";
+																				if(lc $secondRelation eq lc "ss" || lc $_ eq lc "ss"){
+																					print @nouns;
+																					print "gotcheai\n";
+																				}
+																				
 																				#open(FILEZ, ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
-																				#print FILEZ $newRelation;
-																				#print $gephiFile . "\n";
+																				###print FILEZ $newRelation;
+																				###print $gephiFile . "\n";
  																				print $newRelation;
-																				close FILEZ;
+																				#close FILEZ;
 																				$matchfound = "true";
 																				last;
 																		}else{
 																				open(my $line, '>>', "DBKnimeSplitInGephiFormat/${gephiFile}DB.csv");
-																				print $line;
+																				##print $line;
 																				last
 																		}
 																}
@@ -139,14 +143,16 @@ sub filterRelationsOverDictionary{
 sub checkIfMatchesFullString{
 	my $dictionaryTerm   = shift;
 	my $stringToBeTested = shift;
+	$stringToBeTested =~ s/\n//g;
 	
 	my @dictionArray = split(" ", $dictionaryTerm);
-	if(scalar(@dictionArray)==1){
+	my @stringArray  = split("_" , $stringToBeTested);
+	if(scalar(@dictionArray)==1 || scalar(@stringArray)==1){
 		return 0;
 	}else{
-		$stringToBeTested =~ s/_/\s/g;
-		if(index(lc $stringToBeTested , lc $dictionaryTerm)) { 
-		    return 1;
+		$stringToBeTested =~ s/_/ /g;
+		if(index(lc $stringToBeTested , lc $dictionaryTerm) >-1) { 
+			    return 1;		
 		}else{
 			return 0;
 		}
@@ -157,4 +163,4 @@ sub checkIfMatchesFullString{
 
 
 
-#print $text;
+
