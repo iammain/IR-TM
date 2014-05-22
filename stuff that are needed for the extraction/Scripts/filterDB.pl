@@ -15,6 +15,10 @@ $text  =~ s/["\d,]//g;
 my @dictionary = split("\n" ,$text);
 splice(@dictionary, 0, 1);
 
+
+my $filepath = "../DBKnime.csv"; 
+filterRelationsOverDictionary($filepath);
+exit(0);
 my $dir = "../DBKnimeSplitByRelation";
 foreach my $fp (glob("$dir/*.csv")) {
 #printf "%s\n", $fp;
@@ -34,11 +38,10 @@ sub filterRelationsOverDictionary{
 
 		my $gephiFile = $file;
 		my @File = split('/' ,$gephiFile);
-		$gephiFile = @File[2];
+		$gephiFile = @File[1];
 		$gephiFile =~ s/\.csv//g;
 
 		foreach my $line (<INFO>)  {
-				print $line;
 				for(@dictionary){
 						my @nouns = split(";", $line);
 						if ( index( lc @nouns[0] , lc $_) > -1){
@@ -47,16 +50,17 @@ sub filterRelationsOverDictionary{
 								for my $individualToken(@individualTokens){
 										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
 												for my $secondRelation(@dictionary){
-														my @secondIndividualToken = split("_" , @nouns[1]);
+														my @secondIndividualToken = split("_" , @nouns[2]);
 														for my $secondIndividualToken(@secondIndividualToken){
 																if( index( lc $secondIndividualToken , lc $secondRelation)>-1 && length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
 																				my $newRelation ="";
-																				$newRelation = $newRelation . $_ . ';' . $secondRelation  ."\n";
-																				open(FILEZ,  ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
+																				$newRelation = $newRelation . $_ . ';' . @nouns[1] ."\n";
+																				$newRelation = $newRelation . @nouns[1] . ';' .$secondRelation . "\n";
+																				#open(FILEZ,  ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
 																				#print $gephiFile . "\n";
-																				print FILEZ $newRelation;
-																				#print $newRelation;
+																				#print FILEZ $newRelation;
+																				print $newRelation;
 																				close FILEZ;
 																				$matchfound= "true";
 																				last;
@@ -80,8 +84,8 @@ sub filterRelationsOverDictionary{
 								}
 
 
-						}elsif(index( lc @nouns[1],lc $_) > -1){
-								my @individualTokens = split("_" , @nouns[1]);
+						}elsif(index( lc @nouns[2],lc $_) > -1){
+								my @individualTokens = split("_" , @nouns[2]);
 								my $matchfound = "false";
 								for my $individualToken(@individualTokens){
 										if ( index( lc $individualToken , lc $_) > -1 && length($individualToken)== length($_)){
@@ -90,12 +94,12 @@ sub filterRelationsOverDictionary{
 														for my $secondIndividualToken(@secondIndividualToken){
 																if( index( lc $secondIndividualToken , lc $secondRelation)>-1  && length($secondIndividualToken)== length($secondRelation)){
 																		if($forGephi eq "true"){
-																				my $newRelation ="";
-																				$newRelation = $newRelation . $secondRelation .  ';' . $_ ."\n";
-																				open(FILEZ, ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
-																				print FILEZ $newRelation;
+																				my $newRelation = $secondRelation .';' . @nouns[1] ."\n";
+																				$newRelation = $newRelation. @nouns[1] . ";" . $_ . "\n";
+																				#open(FILEZ, ">>../DBKnimeSplitInGephiFormat/${gephiFile}.csv");
+																				#print FILEZ $newRelation;
 																				#print $gephiFile . "\n";
- 																				#print $newRelation;
+ 																				print $newRelation;
 																				close FILEZ;
 																				$matchfound = "true";
 																				last;
