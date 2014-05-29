@@ -18,3 +18,8 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += \
+    ../Extraction/Scripts/coreference.pl \
+    ../Extraction/Scripts/filterDB.pl \
+    ../Extraction/Scripts/tokenExtractor.pl

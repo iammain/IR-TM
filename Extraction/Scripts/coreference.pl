@@ -6,11 +6,16 @@ use Data::Dumper;
 use XML::Mini::Document;
 use Scalar::MoreUtils qw(empty);
 use Encode;
-my $dir = "~/Desktop/parsedData";
-my $datadir = "~/Desktop/alldata";
+
+my $datadir = shift;
+my @splits = split("/", $datadir);
+my @parentdir = splice @splits, 0, -2;
+my $dir = join("/", @parentdir) . "/Parsed";
+my $aggregatedfile = join("/", @parentdir) . "/AggregatedData/aggregated.txt";
+
 my $dataCount = 0;
 my $currentfile;
-my $brokenpath = shift;
+
 eval{
 		foreach my $fp (glob("$datadir/*")) {
 #
@@ -160,7 +165,7 @@ eval{
 		my $e = $@;
 		print("Something Went Wrong, probably no coreferneces error of i${e}!!");
 		unlink $currentfile;
-		`perl $brokenpath >>  aggregatedData.txt`;
+		`perl coreference.pl >>  ${diraggregated}`;
 };
 
 
