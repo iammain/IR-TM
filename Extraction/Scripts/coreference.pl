@@ -1,10 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use warnings;
-use HTML::Strip;
 use File::Slurp;
-use XML::Simple;
-use XML::Smart;
 use Data::Dumper;
 use XML::Mini::Document;
 use Scalar::MoreUtils qw(empty);
@@ -13,6 +10,7 @@ my $dir = "~/Desktop/parsedData";
 my $datadir = "~/Desktop/alldata";
 my $dataCount = 0;
 my $currentfile;
+my $brokenpath = shift;
 eval{
 		foreach my $fp (glob("$datadir/*")) {
 #
@@ -162,9 +160,8 @@ eval{
 		my $e = $@;
 		print("Something Went Wrong, probably no coreferneces error of i${e}!!");
 		unlink $currentfile;
-		`perl coreference.pl >>  aggregatedData.txt`;
+		`perl $brokenpath >>  aggregatedData.txt`;
 };
-
 
 
 
