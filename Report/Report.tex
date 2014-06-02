@@ -67,7 +67,9 @@ For the KNIME-built parser notable is the inability to extract the meta informat
 %
 \section{Preprocessing}
 %
-Some stuff...
+The conventional text preprocessing apart from the rest should include such steps as stop-word filtering and stemming. In this work it was observed that performing of any of those procedures dramatically decreases the system's performance, especially both in terms of the number of relations extracted and in their correspondence to the original ones in the text. Therefore, those steps were not performed to obtain the final results.
+
+In the present work preprocessing stage mainly was limited to the proper named entity (NE) extraction from the text. Entities of types \textit{Person}, \textit{Organization} and \textit{Location} were extracted from the articles. Later they were normalized to the same format and together they formed a set of NE dictionaries, which were essential at the mining stage.
 %
 \section{Text Mining}
 %
