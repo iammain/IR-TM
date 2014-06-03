@@ -22,6 +22,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     statusBar()->showMessage("Please select the in- and output directories.");
 
+    ui->RunStanford->setVisible(false);
+    ui->RunCoref->setVisible(false);
+    ui->RunRelation->setVisible(false);
+    ui->textPathIn->setDisabled(true);
+    ui->textPathOut->setDisabled(true);
+
     QDir dir(QCoreApplication::applicationDirPath());
     #if defined(Q_OS_WIN)
     if (dir.dirName().toLower() == "debug" ||
@@ -48,9 +54,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_RunCoref_clicked()
 {
+    QString savedDir = QDir::currentPath();
+    QDir path(pathInParental);
+    path.mkpath("ReVerb_results");
+    path = pathInParental + "/StanfordNLP_results";
+    //QStringList list = path.entryList(QDir::Files);
+
     QProcess p;
-    QString program = "perl coreference.pl " + pathIn;
-    p.execute(program);
+
+    // 1. Run coreference.pl on the data + Stanford NLP processing results
+    p.setStandardOutputFile(pathInParental + "/temp/aggregatedData.txt", QIODevice::Truncate);
+    p.start("perl", QStringList() << "coreference.pl" << pathIn << path.currentPath());
+
+    if (!p.waitForFinished(-1)){}
+
+    // 2. Run reverb to extract sentence structures from the produced file
+    p.setStandardOutputFile("res.txt", QIODevice::Truncate);
+    p.start("java", QStringList() << "-Xmx512m" << "-jar" << "reverb/reverb-latest.jar" << "test.txt");
+
+    // Is needed to wait for the process to finish
+    if (!p.waitForFinished(-1)){}
+
+    path = savedDir;
+
+    ui->RunRelation->setVisible(true);
+    ui->statusBar->showMessage("Coreferences resolved finished.");
 }
 
 void MainWindow::on_BrowseIn_clicked()
@@ -77,11 +105,13 @@ void MainWindow::on_BrowseOut_clicked()
 
     if (!pathOut.isNull())
     {
-        statusBar()->showMessage("Output folder selected.");
+        statusBar()->showMessage("Output folder selected. Please proceed with processing.");
         ui->textPathOut->setText(pathOut);
     }
     else
         statusBar()->showMessage("Unable to locate output folder.");
+
+    ui->RunStanford->setVisible(true);
 }
 
 void MainWindow::on_RunStanford_clicked()
@@ -95,8 +125,8 @@ void MainWindow::on_RunStanford_clicked()
     QDir path(pathInParental);
     path.mkpath("temp");
     QString path2temp = pathInParental + "/temp";
-    path.mkpath("parsed");
-    QString path2parsed = pathInParental + "/parsed";
+    path.mkpath("StanfordNLP_results");
+    QString path2parsed = pathInParental + "/StanfordNLP_results";
     path = pathIn;
 
     QString name = path2temp + "/listOfInput.txt";
@@ -117,8 +147,12 @@ void MainWindow::on_RunStanford_clicked()
     QDir::setCurrent(savedDir);
     QDir::setCurrent("stanford-corenlp-full-2014-01-04");
 
-    QProcess p;
-    QString program = "java -cp stanford-corenlp-3.3.1.jar;stanford-corenlp-3.3.1-models.jar;xom.jar;joda-time.jar;jollyday.jar;ejml-0.23.jar -Xmx1g edu.stanford.nlp.pipeline.StanfordCoreNLP -annotators tokenize,ssplit,pos,lemma,ner,parse,dcoref -filelist " + name;// + " -outputDirectory " + pathInParental + "/parsed";
-    p.execute(program);
-    qDebug("Finished!!!!!!!!!!!!!!!!!!!!!!!");
+    //QProcess p;
+    //QString program = "java -cp stanford-corenlp-3.3.1.jar;stanford-corenlp-3.3.1-models.jar;xom.jar;joda-time.jar;jollyday.jar;ejml-0.23.jar -Xmx1g edu.stanford.nlp.pipeline.StanfordCoreNLP -annotators tokenize,ssplit,pos,lemma,ner,parse,dcoref -filelist " + name + " -outputDirectory " + pathInParental + "/StanfordNLP_results";
+    //p.execute(program);
+
+    QDir::setCurrent(savedDir);
+
+    ui->RunCoref->setVisible(true);
+    ui->statusBar->showMessage("Stanford NLP finished.");
 }
