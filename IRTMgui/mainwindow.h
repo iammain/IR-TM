@@ -31,6 +31,12 @@ private slots:
 
     void on_RunStanford_clicked();
 
+    void on_RunRelation_clicked();
+
+    void on_RunNormalization_clicked();
+
+    void on_RunGDF_clicked();
+
 private:
     Ui::MainWindow *ui;
     QDir directory;
