@@ -37,6 +37,12 @@ private slots:
 
     void on_RunGDF_clicked();
 
+    void on_RunDictionaries_clicked();
+
+    void resetButton(QPushButton*);
+
+    void set2doneButton(QPushButton*);
+
 private:
     Ui::MainWindow *ui;
     QDir directory;
