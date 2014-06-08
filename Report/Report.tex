@@ -70,19 +70,23 @@ For the KNIME-built parser notable is the inability to extract the meta informat
 %
 The conventional text preprocessing apart from the rest should include such steps as stop-word filtering and stemming. In this work it was observed that performing of any of those procedures dramatically decreases the system's performance, especially both in terms of the number of relations extracted and in their correspondence to the original ones in the text. Therefore, those steps were not performed to obtain the final results.
 
-In the present work preprocessing stage mainly was limited to the proper named entity (NE) extraction from the text and co-reference and anaphora resolutions. Entities of types \textit{Person}, \textit{Organization} and \textit{Location} were extracted from the articles. Later they were normalized to the same format and together they formed a set of NE dictionaries, which were essential at the mining stage. Co-reference resolution was crucial for this work due to the fact that the document corpus is retrieved from websites of news agencies and, due to that, the language is formal and consists of many references. Resolving the co-references can increase by more than 50 percent the quality of relation extraction. The tool used for the resolution was the Stanford-NLP. The references found by the tool were replaced by the phrase which they were referring so that in the relation extraction phase, the relations could be extracted with more precision. The replacement of the references from the results of the Stanford-NLP was done with a custom Perl script.
+In the present work preprocessing stage mainly was limited to the proper named entity (NE) extraction from the text and co-reference and anaphora resolutions. Entities of types \textit{Person}, \textit{Organization} and \textit{Location} were extracted from the articles. Later they were normalized to the same format and together they formed a set of NE dictionaries, which were essential at the mining stage. Co-reference resolution was crucial for this work due to the fact that the document corpus was retrieved from websites of news agencies and, due to that, the language was formal and consisted of many references. Therefore resolving the co-references would greatly increase the quality of relation extraction. 
+
+The two main tools that were researched for the resolution handling were BART~\cite{bart} and  Stanford-NLP~\cite{stanford} with the latter being the one that was finally used. The tool was chosen due to the automatic information it provides, like dependency grammars, that can be used to further improve the relation extraction in future work. The references found by it were replaced by the phrase which they were referring so that in the relation extraction phase, the relations could be extracted with more precision. The replacement of the references from the results of the Stanford-NLP was done with a custom Perl script.
 %
 
 \section{Text Mining}
 %
-After all the preprocessing is done, relation extraction techniques can be applied to the document corpus. The corpus consists of text documents that have been cleaned-up in the preprocessing phase. In this work ReVerb was used as a relation extraction tool. It takes as an input all the preprocessed text files and outputs sentences in the form \{\textit{Part 1}\}--\{\textit{Relation}\}--\{\textit{Part 2}\} where the Relation is a verb phrase (VP), as it follows from the tool name, and Parts 1 and 2 are noun phrases (NP). ReVerb outputs a confidence parameter along with each extracted relation. It defines the probability that a relation is correctly extracted. 
+After all the preprocessing is done, relation extraction techniques can be applied to the document corpus. The corpus consists of text documents that have been cleaned-up in the preprocessing phase. In this work the tool ReVerb was used as a relation extraction tool. It takes as an input all the preprocessed text files and outputs sentences in the form \{\textit{Part 1}\}--\{\textit{Relation}\}--\{\textit{Part 2}\} where the Relation is a verb phrase (VP), as it follows from the tool name, and Parts 1 and 2 are noun phrases (NP). ReVerb outputs a confidence parameter along with each extracted relation. It defines the probability that a relation is correctly extracted. 
 
 Since there was a need for clean relations in this work, this parameter was set to 0.8 filtering out the relations that were output with smaller confidence and leaving only the correct ones. Once all the relations of the corpus are extracted, the next step was to filter them keeping only relations between entities that exist in the dictionary that was created in the preprocessing phase. Since in this work only inter-entity relations were needed, only sentences that had entities on both parts were considered as valid. Finally, the relations were normalized over the entities which they represented meaning that all the sentences of the form \{\textit{NP}\}--\{\textit{VP}\}--\{\textit{NP}\} where reduced to the form \{\textit{Entity 1}\}--\{\textit{VP}\}--\{\textit{Entity 2}\}. The extraction of the relations from the results, as well as the normalization and string manipulation so that the output is a valid format that can be parsed in Gephi were done using a custom Perl script.
+
+Even though for this domain a big confidence threshold was needed for the application to produce correct results, this parameter does not restrict the application since in can be freely modified from the GUI.
 
 %
 \subsection{The application}
 %
-For the ease of handling, maintainability and enhancement of the text processing methods described, a desktop application was implemented. Qt was used as a development platform, in order to keep the application cross-platform. It's main window interface is shown in Fig.~\ref{Application}.
+For the ease of usage, maintainability and enhancement of the text processing methods described, a desktop application was implemented. Qt was used as a development platform, in order to keep the application cross-platform. It's main window interface is shown in Fig.~\ref{Application}.
 \begin{figure}[htbp]
   \centering
     \includegraphics[width=0.8\textwidth]{images/Application}
@@ -97,7 +101,7 @@ Unfortunately, the progress bar was not integrated in the application to inform 
 %
 \section{Visualization}
 %
-Several modern tools were explored for the task of visualization. Among those, most notable are - GATE, KNIME and Gephi. At first, on the stage of the coreference resolution, it was thought that GATE as a tool specifically designed for visual depiction of the text analysis results would suit best. However, it turned out that in terms of the visualization of the whole corpus processing results it is a very inflexible tool, which does not allow any user interaction with the visualization. It was decided, that GATE works best for the single document processing analysis in the situations when new or modified text mining algorithms are tested, but it does not fit the needs of a large scale mining.
+Several modern tools were explored for the task of visualization. Among those, most notable are - GATE\cite{gate}, KNIME\cite{knime} and Gephi\cite{gephi}. At first, on the stage of the coreference resolution, it was thought that GATE as a tool specifically designed for visual depiction of the text analysis results would suit best. However, it turned out that in terms of the visualization of the whole corpus processing results it is a very inflexible tool, which does not allow any user interaction with the visualization. It was decided, that GATE works best for the single document processing analysis in the situations when new or modified text mining algorithms are tested, but it does not fit the needs of a large scale mining.
 
 After that, KNIME was used for basic visualizations almost on every processing stage. This tool is very helpful for the data input-output control purposes. Apart from that, KNIME was used for the most frequent keywords extraction and visualization in the form of an intuitive tag cloud and for the keyword clustering and visualization, both k-means and hierarchical.
 
@@ -107,7 +111,7 @@ The most efficient and meaningful visualizations of the extracted relations were
 %
 As can be seen from the Visualizations, the most occurring relations within the corpus dominate the graph of all the relations. Furthermore, since strong words and verbs that probably represent opinions and subjective facts are not used very often, they are filtered out and are not presented in the graph. This leaves only the most occurring relations and consequently the objective ones in the end. It must be noted that numeric facts, e.g. the number of casualties on a certain event and how it fluctuates over time, cannot be efficiently extracted. This happens due to the fact that many different events happen simultaneously and, since the data comes from many different agencies, there is enough noise to make extracting such events unfeasible. The graphical interface of the application provides a framework that makes it easy for the end user to provide the text files and get the extracted relations in a format that can be easily passed on visualization tools. 
 
-Finally, among the improvements that could raise the quality of the framework are as follows. Firstly, in the relation extraction phase, negation handling  should improve the quality of the relations that are extracted. Furthermore, the algorithm of extracting entities from the relations can be improved. Every part of a sentence can have more than one entities within, but only the first is taken into account when matching the dictionary entities with the sentence. This could create more combinations of relations, but it's not clear if it will improve the end result. Lastly, improving the interface that is provided will make the application less domain dependent.
+Finally, some improvements that could raise the quality of the framework are the following. Firstly, in the relation extraction phase, negation handling  should improve the quality of the relations that are extracted. Furthermore, the algorithm of extracting entities from the relations can be improved. Every part of a sentence can have more than one entities within, but only the first is taken into account when matching the dictionary entities with the sentence. An approach that takes into account all the entities that appear in a part of a sentence could be implemented. This could create more combinations of relations, but it's not clear if it will improve the end result since it could introduce noise to the relations. Lastly, improving the interface that is provided with highly customizable parameters will make the application even less domain dependent.
 %
 \section{Conclusion and future work}
 %
@@ -138,6 +142,14 @@ Bastian M, Heymann S, Jacomy M (2009)
 Gephi: an open source software for exploring and manipulating networks.
 ICWSM 361--362
 
+\bibitem{knime}
+Berthold, M. R., Cebron, N., Dill, F., Gabriel, T. R., Kötter, T., Meinl, T., ... \& Wiswedel, B. (2008). KNIME: The Konstanz information miner (pp. 319-326). Springer Berlin Heidelberg.
+
+\bibitem{gate}
+Cunningham, H., Maynard, D., \& Bontcheva, K. (2011). Text processing with gate. Gateway Press CA.
+
+\bibitem{bart}
+Versley, Y., Ponzetto, S. P., Poesio, M., Eidelman, V., Jern, A., Smith, J., ... \& Moschitti, A. (2008, June). BART: A modular toolkit for coreference resolution. In Proceedings of the 46th Annual Meeting of the Association for Computational Linguistics on Human Language Technologies: Demo Session (pp. 9-12). Association for Computational Linguistics.
 
 \end{thebibliography}
 
