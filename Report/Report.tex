@@ -1,7 +1,8 @@
 \documentclass[]{article}
 
 % Used packages
-\usepackage{multicol}
+\usepackage{multicol} % allows to use multiple column alignment
+\usepackage{graphicx} % allows to use graphics
 
 %opening
 \title{Extracting objective facts \\ from subjective and noisy sources}
@@ -75,20 +76,33 @@ In the present work preprocessing stage mainly was limited to the proper named e
 \section{Text Mining}
 %
 After all the preprocessing filters are aplied, relation extraction techniques can be applied to the document corpus. The corpus consists of text documents that have been filtered during the preprocessing phase. The tool used for the relation extraction is Reverb and it takes as an input all the filtered text files and ouputs sentences in the form Part1-Relation-Part2 where the Relation is a Verb Phrase and Part1 and Part2 are Noun Phrases. Reverb has a confidence parameter that defines the probability that a relation is corectly extracted. Since there was a need for clean relations, this parameter was set to 0.8 filtering out the relations that were output with smaller confidence and leaving only the corect ones. Once all the relations of the corpus are extracted, the next step was to filter them keeping only relations between entities that exist in the dictionary that was created in the preprocessing phase. Since in this work only iter-entity relations were needed, only sentences that had entities on both parts were considered as valid. Finally, the relations were normalized over the entities which they represented meaning that all the sentences of the form NP VP NP where reduced to the form entity1 VP entity2.  The extraction of the relations from the results, as well as the normalization and string manipulation so that the output is a valid format that can be parsed in gephi were done in a custom Perl script.
-Some stuff...
-%
-\subsection{Visualization}
-%
-Several modern tools were explored for the task of visualization. Among those, most notable are - GATE, Knime and Gephi. At first, on the stage of the coreference resolution, it was thought that GATE as a tool specifically designed for visual depiction of the text analysis results would suit best. However, it turned out that in terms of the visualization of the whole corpus processing results it is a very inflexible tool, which does not allow any user interaction with the visualization. It was decided, that GATE works best for the single document processing analysis in the situations when new or modified text mining algorithms are tested, but it does not fit the needs of a large scale mining.
 
-After that, Knime was used for basic visualizations almost on every processing stage. This tool is very helpful for the data input-output control purposes.
+%
+\subsection{The application}
+For the ease of handling, maintainability and enhancement of the text processing methods described, a desktop application was implemented. Qt was used as a development platform, in order to keep the application cross-platform. It's main window interface is shown in Fig.~\ref{Application}.
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=0.8\textwidth]{images/Application}
+    \caption{The application's main interface}
+  \label{Application}
+\end{figure}
 
+The processing done by the application is fully automated and requires the user only to supply the input text files with the articles s/he wants to analyze.
+%
+%
+\section{Visualization}
+%
+Several modern tools were explored for the task of visualization. Among those, most notable are - GATE, KNIME and Gephi. At first, on the stage of the coreference resolution, it was thought that GATE as a tool specifically designed for visual depiction of the text analysis results would suit best. However, it turned out that in terms of the visualization of the whole corpus processing results it is a very inflexible tool, which does not allow any user interaction with the visualization. It was decided, that GATE works best for the single document processing analysis in the situations when new or modified text mining algorithms are tested, but it does not fit the needs of a large scale mining.
+
+After that, KNIME was used for basic visualizations almost on every processing stage. This tool is very helpful for the data input-output control purposes. Apart from that, KNIME was used for the most frequent keywords extraction and visualization in the form of an intuitive tag cloud and for the keyword clustering and visualization, both k-means and hierarchical.
+
+The most efficient and meaningful visualizations of the extracted relations were produced by Gephi. Several types of representations were tried in it. It can be noticed that any of the representation tried suits well for the specific tasks. For example, relation types shown as nodes as well works good when the intention is to show the relation-centered graph, which is useful when specific relations are of the major interest (eg. ``killed", ``accused", etc.) On the other hand, in the more general settings, when the task is more in the identification of what connects the entities together, a visualization where relations are just shown as edge labels works best.
 % 
-\subsection{Discussion}
+\section{Discussion}
 %
 As can be seen from the Visualizations, the most occuring relations within the corpus dominate the graph of all the relations. Furthermore, since strong words and verbs that probably represent opinions and subjective facts are not used very often, they are filtered out and are not presented in the graph. This leaves only the most occuring relations and consequently the objective ones in the end. It must be noted that numeric facts, e.g. the number of casualties on a certain event and how this number fluctuates over time, cannot be efficiently extracted. This happens due to the fact that many different events happen simultaneously and, since the data comes from many different agencies, there is enough noise to make extracting such events unfeasible. The graphical interface of the application provides a framework that makes it easy for the end user to provide the text files and get the extracted relations in a format that can be easily passed on visualization tools. 
 
-Finally, improvements that can improve the quality of the application will be mentioned. Firstly, in the relation extraction phase, handling negations will improve the quality of the relations that are extracted. Furthermore, the algorithm of extracting entities from the relations can be improved. Every part of a sentence can have more than one entities within, but only the first is taken into account when matching the dictionary entities with the sentence. This could create more combinations of relations, but it's not clear if it will improve the end result. Lastly, improving the interface that is provided will make the application less domain dependent. Having options like manually modyfing the confidence threshold will make the application more customizable and, hence, more powerful.
+Finally, improvements that can improve the quality of the application will be mentioned. Firstly, in the relation extraction phase, handling negations will improve the quality of the relations that are extracted. Furthermore, the algorithm of extracting entities from the relations can be improved. Every part of a sentence can have more than one entities within, but only the first is taken into account when matching the dictionary entities with the sentence. This could create more combinations of relations, but it's not clear if it will improve the end result. Lastly, improving the interface that is provided will make the application less domain dependent. Having options like manually modifying the confidence threshold will make the application more customizable and, hence, more powerful.
 %
 \section{Conclusion and future work}
 %
@@ -100,16 +114,24 @@ Extracting objective facts regarding the same events as published from different
 %
 
 \bibitem {perl}
-Holzner, S. (1999). Perl core language little black book. Coriolis Group Books
+Holzner S (1999)
+Perl core language little black book. 
+Coriolis Group Books
 
 \bibitem {reverb}
-Fader, A., Soderland, S., \& Etzioni, O. (2011, July). Identifying relations for open information extraction. In Proceedings of the Conference on Empirical Methods in Natural Language Processing (pp. 1535-1545). Association for Computational Linguistics.
+Fader A, Soderland S, Etzioni O (2011) 
+Identifying relations for open information extraction. 
+Proc. Conf. Empirical Methods in Nat. Lang. Proc. 1535--1545
+Association for Computational Linguistics.
 
 \bibitem {stanford}
-De Marneffe, M. C., \& Manning, C. D. (2008). Stanford typed dependencies manual. URL http://nlp. stanford. edu/software/dependencies manual. pdf
+De Marneffe MC, Manning CD (2008)
+Stanford typed dependencies manual. \texttt{http://nlp.stanford.edu/software/dependencies\_manual.pdf}
 
 \bibitem{gephi}
-Bastian, M., Heymann, S., \& Jacomy, M. (2009, May). Gephi: an open source software for exploring and manipulating networks. In ICWSM (pp. 361-362).
+Bastian M, Heymann S, Jacomy M (2009)
+Gephi: an open source software for exploring and manipulating networks.
+ICWSM 361--362
 
 
 \end{thebibliography}
