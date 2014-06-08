@@ -1,232 +1,119 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
-\begin_document
-\begin_header
-\textclass article
-\begin_preamble
+\documentclass[]{article}
 
+% Used packages
+\usepackage{multicol}
 
 %opening
 \title{Extracting objective facts \\ from subjective and noisy sources}
-\author{Kirill Tumanov \& Chatzichristodoulou Panagiotis}
-\end_preamble
-\use_default_options false
-\maintain_unincluded_children false
-\language english
-\language_package none
-\inputencoding auto
-\fontencoding default
-\font_roman default
-\font_sans default
-\font_typewriter default
-\font_default_family default
-\use_non_tex_fonts false
-\font_sc false
-\font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\author{Kirill Tumanov \& Panagiotis Chatzichristodoulou}
 
-\graphics default
-\default_output_format default
-\output_sync 0
-\bibtex_command default
-\index_command default
-\paperfontsize default
-\spacing single
-\use_hyperref false
-\papersize default
-\use_geometry false
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 0
-\use_mathdots 0
-\cite_engine basic
-\use_bibtopic false
-\use_indices false
-\paperorientation portrait
-\suppress_date false
-\use_refstyle 0
-\index Index
-\shortcut idx
-\color #008000
-\end_index
-\secnumdepth 3
-\tocdepth 3
-\paragraph_separation indent
-\paragraph_indentation default
-\quotes_language english
-\papercolumns 1
-\papersides 1
-\paperpagestyle default
-\tracking_changes false
-\output_changes false
-\html_math_output 0
-\html_css_as_file 0
-\html_be_strict false
-\end_header
+\begin{document}
 
-\begin_body
+\maketitle
 
-\begin_layout Section
-Introduction
-\end_layout
+\begin{abstract}
+Some random abstract. (To be put in the end)
+\end{abstract}
 
-\begin_layout Standard
+%
+\section{Introduction}
+%
+Modern news agencies discuss the ongoing events with a great deal of subjectivity and dispute. This may be related to the general complexity of the causal relations in each situation nowadays, but also to the desire to put the events in a different light so that their story sells best. Whichever the reason is it is becoming more and more demanding for the reader to grasp what actually is going on. Especially when it comes to the analysis of the several information sources.
+
+Today it is very popular to discover and evaluate polarity of the opinions on the web by emotional and sentiment mining. This analysis is useful specifically for uncovering of the (mostly author's) attitude towards the situation. However, it does not provide any insight in what exactly was criticized or admired. In other words, it does not provide the context for the overall result, it just presents the attitude.
+
+When a more pragmatic and detailed analysis is needed, fact extraction comes into play. An underlying basis of the present work is the belief that the proper information presentation is free of the emotional flavor, and that each story is comprised of a set of interrelated facts and events. When it comes to understanding the situation, only facts matter.
+
+An example of both subjective and noisy information sources would be having the articles with different values of the magnitude of an earthquake. In this case as soon as the earthquake occurs, the first articles have different magnitude of the earthquake but after some time, when the scientists agree on the number they all converge to it. An example of only the subjective data would be articles referring to casualties of war. These data would have an extra challenge being correctly mined as in such cases each side claims a different number of victims. Furthermore, those numbers do not change over time due to the fact that they are solely subjective and not noisy.
+
+The purpose of this work is to extract the set of facts from a list of sources to be able track the situation regardless of the way it is presented. This means that objective facts from articles with subjective and noisy data are mined for the extraction.
+%
+\section{Information Retrieval}
+%
+%
+\subsection{Introduction to the Mined Topic}
+%
+The hottest topic of the days of the work was a political crisis in Ukraine. Since a lot of the articles were written on the topic every day it was selected for investigation. It was observed that the Russian and the West policies were polar and that was another reason for mining those sources.
+
+The eight following news agencies from Russia, the West, China and Middle East were used as sources of the info on the topic:
+\begin{multicols}{2}
+	\begin{itemize}
+		\itemsep 0em
+		\item Russia Today 
+		\item CNN
+		\item Washington Post
+		\item Reuters
+		\item RIA Novosti
+		\item ITAR-TASS
+		\item Al-Jazeera
+		\item Xinhua
+	\end{itemize}
+\end{multicols}
+%
+\subsection{Data Crawling and Parsing}
+%
+It was decided to retrieve articles from the agencies' RSS feeds. For that purpose at first a custom built parser was implemented in Perl. The parser basic structure consists of: 
+\begin{enumerate}
+	\item The crawler (is installed on a crawl job to query the given list of feeds for all new articles)
+	\item The source parser (filters only the articles containing one of the keywords in the manually created dictionary (which in this work contained 35 words))
+	\item The HTML data parser (removes the HTML tags from the articles)
+	\item The meta-information handler (saves the information about the time article was published, its title and the publisher agency)
+\end{enumerate}
+However, this manual approach was soon discarded mainly due to the poor quality of the HTML tag removal, which left a lot of garbage data from the web pages. 
+
+Since then, the parser built in KNIME was used for the same purpose. The major difference in the structure was in an addition of a scoring block which evaluated article ``relativeness" to the topic. This block was built based on the same dictionary as discussed. The minimum acceptable threshold of matching words was set to two. Other processing steps mainly were the same, but the article text retrieval quality was much better and disc space was almost unused since information was kept in the form of links as long as it was possible. 
+
+For the KNIME-built parser notable is the inability to extract the meta information about the articles. Therefore, the workaround for that problem had to be implemented. As a result of an information retrieval stage each article with its full corresponding meta-information was reconstructed in the form of a table entry. In total, the data table used consisted of 1892 entries.
+%
+\section{Preprocessing}
+%
+The conventional text preprocessing apart from the rest should include such steps as stop-word filtering and stemming. In this work it was observed that performing of any of those procedures dramatically decreases the system's performance, especially both in terms of the number of relations extracted and in their correspondence to the original ones in the text. Therefore, those steps were not performed to obtain the final results.
+
+In the present work preprocessing stage mainly was limited to the proper named entity (NE) extraction from the text and co-reference and anaphora resolutions. Entities of types \textit{Person}, \textit{Organization} and \textit{Location} were extracted from the articles. Later they were normalized to the same format and together they formed a set of NE dictionaries, which were essential at the mining stage. Co-reference resolution was crucial for this work due to the fact that the document corpus is retrieved from websites of news agencies and, due to that, the language is formal and consists of many references. Resolving the co-references can increase by more than 50 percent the quality of relation extraction. The tool used for the resolution was the Stanford-NLP. The references found by the tool were replaced by the phrase which they were referring so that in the relation extraction phase, the relations could be extracted with more precision. The replacement of the references from the results of the Stanford-NLP was done with a custom Perl script.
+%
+
+\section{Text Mining}
+%
+After all the preprocessing filters are aplied, relation extraction techniques can be applied to the document corpus. The corpus consists of text documents that have been filtered during the preprocessing phase. The tool used for the relation extraction is Reverb and it takes as an input all the filtered text files and ouputs sentences in the form Part1-Relation-Part2 where the Relation is a Verb Phrase and Part1 and Part2 are Noun Phrases. Reverb has a confidence parameter that defines the probability that a relation is corectly extracted. Since there was a need for clean relations, this parameter was set to 0.8 filtering out the relations that were output with smaller confidence and leaving only the corect ones. Once all the relations of the corpus are extracted, the next step was to filter them keeping only relations between entities that exist in the dictionary that was created in the preprocessing phase. Since in this work only iter-entity relations were needed, only sentences that had entities on both parts were considered as valid. Finally, the relations were normalized over the entities which they represented meaning that all the sentences of the form NP VP NP where reduced to the form entity1 VP entity2.  The extraction of the relations from the results, as well as the normalization and string manipulation so that the output is a valid format that can be parsed in gephi were done in a custom Perl script.
 Some stuff...
- 
-\end_layout
-
-\begin_layout Section
-Information Retrieval
-\end_layout
-
-\begin_layout Standard
+%
+\subsection{Visualization}
+%
 Some stuff...
- 
-\end_layout
-
-\begin_layout Section
-Preprocessing
-\end_layout
-
-\begin_layout Standard
-Some stuff...
- 
-\end_layout
-
-\begin_layout Section
-Text Mining
-\end_layout
-
-\begin_layout Standard
-Some stuff...
- 
-\end_layout
-
-\begin_layout Section
-Results
-\end_layout
-
-\begin_layout Standard
-Some stuff...
- 
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
 % 
-\end_layout
+\subsection{Discussion}
+%
+As can be seen from the Visualizations, the most occuring relations within the corpus dominate the graph of all the relations. Furthermore, since strong words and verbs that probably represent opinions and subjective facts are not used very often, they are filtered out and are not presented in the graph. This leaves only the most occuring relations and consequently the objective ones in the end. It must be noted that numeric facts, e.g. the number of casualties on a certain event and how this number fluctuates over time, cannot be efficiently extracted. This happens due to the fact that many different events happen simultaneously and, since the data comes from many different agencies, there is enough noise to make extracting such events unfeasible. The graphical interface of the application provides a framework that makes it easy for the end user to provide the text files and get the extracted relations in a format that can be easily passed on visualization tools. 
 
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Visualization
-\end_layout
-
-\begin_layout Standard
-Some stuff...
- 
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-% 
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Discussion
-\end_layout
-
-\begin_layout Standard
-Some stuff...
- 
-\end_layout
-
-\begin_layout Section
-Conclusion
-\end_layout
-
-\begin_layout Standard
-Some stuff...
- 
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
+Finally, improvements that can improve the quality of the application will be mentioned. Firstly, in the relation extraction phase, handling negations will improve the quality of the relations that are extracted. Furthermore, the algorithm of extracting entities from the relations can be improved. Every part of a sentence can have more than one entities within, but only the first is taken into account when matching the dictionary entities with the sentence. This could create more combinations of relations, but it's not clear if it will improve the end result. Lastly, improving the interface that is provided will make the application less domain dependent. Having options like manually modyfing the confidence threshold will make the application more customizable and, hence, more powerful.
+%
+\section{Conclusion and future work}
+%
+Extracting objective facts regarding the same events as published from different sources is not an trivial task. In this work, a framework that can accurately extract relations from a corpus of non-homogenous text documents was presented. The results are given in a form of a graph and their analysis displays the power of the framework. Furthermore, a graphical user interface is provided that makes  the procedure of relation extraction easier the user. Finally, on the discussion section the advantages and drawbacks of the framework are presented as well as ideas about future work that will improve the quality and power of the currently implemented relation extraction techniques.
+%
 % ---- Bibliography ----
-\end_layout
+%
+\begin{thebibliography}{99}
+%
 
-\begin_layout Plain Layout
+\bibitem {bua,col}
+Buades A, Coll B, Morel JM (2005)
+A non-local algorithm for image denoising.
+Proc CVPR IEEE 2:60–65
 
-\end_layout
+\bibitem {perl}
+Holzner, S. (1999). Perl core language little black book. Coriolis Group Books
 
-\end_inset
+\bibitem {reverb}
+Fader, A., Soderland, S., \& Etzioni, O. (2011, July). Identifying relations for open information extraction. In Proceedings of the Conference on Empirical Methods in Natural Language Processing (pp. 1535-1545). Association for Computational Linguistics.
 
+\bibitem {stanford}
+De Marneffe, M. C., \& Manning, C. D. (2008). Stanford typed dependencies manual. URL http://nlp. stanford. edu/software/dependencies manual. pdf
 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status collapsed
-
-\begin_layout Plain Layout
-
-% % % % % % % % % % % % % % % % % %Exemplar sources only!!! 
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
+\bibitem{gephi}
+Bastian, M., Heymann, S., \& Jacomy, M. (2009, May). Gephi: an open source software for exploring and manipulating networks. In ICWSM (pp. 361-362).
 
 
-\end_layout
+\end{thebibliography}
 
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "aha:ela"
-
-\end_inset
-
- Aharon M., Elad M., Bruckstein A., Katz Y.: The K-SVD: An algorithm for designing
- of overcomplete dictionaries for sparse representation.
- IEEE T.
- Signal Proces.
- 54, 11, 4311-4322 (2006)
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "bua"
-
-\end_inset
-
- Buades A.: Image and film denoising by non-local means.
- PhD thesis, Uni.
- de les Illes Balears (2005)
-\end_layout
-
-\end_body
-\end_document
+\end{document}
