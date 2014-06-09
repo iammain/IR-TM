@@ -3,6 +3,7 @@
 % Used packages
 \usepackage{multicol} % allows to use multiple column alignment
 \usepackage{graphicx} % allows to use graphics
+\usepackage{caption} %allows more extensive caption formating
 
 %opening
 \title{Extracting objective facts \\ from subjective and noisy sources}
@@ -101,11 +102,31 @@ Unfortunately, the progress bar was not integrated in the application to inform 
 %
 \section{Visualization}
 %
-Several modern tools were explored for the task of visualization. Among those, most notable are - GATE\cite{gate}, KNIME\cite{knime} and Gephi\cite{gephi}. At first, on the stage of the coreference resolution, it was thought that GATE as a tool specifically designed for visual depiction of the text analysis results would suit best. However, it turned out that in terms of the visualization of the whole corpus processing results it is a very inflexible tool, which does not allow any user interaction with the visualization. It was decided, that GATE works best for the single document processing analysis in the situations when new or modified text mining algorithms are tested, but it does not fit the needs of a large scale mining.
+Several modern tools were explored for the task of visualization. Among those, most notable are - GATE~\cite{gate}, KNIME~\cite{knime} and Gephi~\cite{gephi}. At first, on the stage of the coreference resolution, it was thought that GATE as a tool specifically designed for visual depiction of the text analysis results would suit best. However, it turned out that in terms of the visualization of the whole corpus processing results it is a very inflexible tool, which does not allow any user interaction with the visualization. It was decided, that GATE works best for the single document processing analysis in the situations when new or modified text mining algorithms are tested, but it does not fit the needs of a large scale mining.
 
-After that, KNIME was used for basic visualizations almost on every processing stage. This tool is very helpful for the data input-output control purposes. Apart from that, KNIME was used for the most frequent keywords extraction and visualization in the form of an intuitive tag cloud and for the keyword clustering and visualization, both k-means and hierarchical.
+After that, KNIME was used for basic visualizations almost on every processing stage. This tool is very helpful for the data input-output control purposes. Apart from that, KNIME was used for the most frequent keywords extraction and visualization in the form of an intuitive tag cloud (see Fig.~\ref{Cloud}) and for the keyword clustering and visualization, both k-means and hierarchical.
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=0.8\textwidth]{images/Cloud}
+    \caption{The most frequent stemmed keywords of the used corpus}
+  \label{Cloud}
+\end{figure}
 
-The most efficient and meaningful visualizations of the extracted relations were produced by Gephi. Several types of representations were tried in it. It can be noticed that any of the representation tried suits well for the specific tasks. For example, relation types shown as nodes as well works good when the intention is to show the relation-centered graph, which is useful when specific relations are of the major interest (eg. ``killed", ``accused", etc.) On the other hand, in the more general settings, when the task is more in the identification of what connects the entities together, a visualization where relations are just shown as edge labels works best.
+The most efficient and meaningful visualizations of the extracted relations were produced by Gephi. Several types of representations were tried in it. It can be noticed that any of the representation tried suits well for the specific tasks. For example, relation types shown as nodes as well works good when the intention is to show the relation-centered graph (see Fig.~\ref{KievNetwork}), which is useful when specific relations are of the major interest (e.g. ``killed", ``accused", etc.). On the other hand, in the more general settings, when the task is more in the identification of what connects the entities together, a visualization where relations are just shown as edge labels works best (see Fig.~\ref{KievNetwork}).
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=0.8\textwidth]{images/AllRelations}
+    \captionsetup{justification=centering}
+    \caption{The most significant relations of the used corpus shown \\ as separate nodes (size - Betweenness Centrality, color - Modularity Class)}
+  \label{AllRelations}
+\end{figure}
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=0.8\textwidth]{images/KievNetwork}
+    \captionsetup{justification=centering}
+    \caption{Relational network of the entity ``Kiev", relations shown as labels (size - Eigenvector Centrality, color - Modularity Class)}
+  \label{KievNetwork}
+\end{figure}
 % 
 \section{Discussion}
 %
@@ -143,13 +164,19 @@ Gephi: an open source software for exploring and manipulating networks.
 ICWSM 361--362
 
 \bibitem{knime}
-Berthold, M. R., Cebron, N., Dill, F., Gabriel, T. R., Kötter, T., Meinl, T., ... \& Wiswedel, B. (2008). KNIME: The Konstanz information miner (pp. 319-326). Springer Berlin Heidelberg.
+Berthold MR, Cebron N, Dill F, Gabriel TR, Kötter T, Meinl T, Wiswedel B (2008)
+KNIME: The Konstanz information miner.
+Springer Berlin Heidelberg 319--326
 
 \bibitem{gate}
-Cunningham, H., Maynard, D., \& Bontcheva, K. (2011). Text processing with gate. Gateway Press CA.
+Cunningham H, Maynard D, Bontcheva K (2011)
+Text processing with gate.
+Gateway Press CA.
 
 \bibitem{bart}
-Versley, Y., Ponzetto, S. P., Poesio, M., Eidelman, V., Jern, A., Smith, J., ... \& Moschitti, A. (2008, June). BART: A modular toolkit for coreference resolution. In Proceedings of the 46th Annual Meeting of the Association for Computational Linguistics on Human Language Technologies: Demo Session (pp. 9-12). Association for Computational Linguistics.
+Versley Y, Ponzetto SP, Poesio M, Eidelman V, Jern A, Smith J, Moschitti A (2008)
+BART: A modular toolkit for coreference resolution.
+Proc. 46th Annual Meeting of the Assoc Comp Ling on Human Lang Tech 9--12
 
 \end{thebibliography}
 
