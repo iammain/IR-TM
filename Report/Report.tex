@@ -5,6 +5,7 @@
 \usepackage{graphicx} % allows to use graphics
 \usepackage{caption} %allows more extensive caption formating
 \usepackage{appendix} %allows to add appendix
+\usepackage{adjustbox} %allows to make pictures wider than text marging
 
 %opening
 \title{Extracting objective facts \\ from subjective and noisy sources}
@@ -168,32 +169,36 @@ Proc. 46th Annual Meeting of the Assoc Comp Ling on Human Lang Tech 9--12
 \appendix
 \appendixpage
 
+\renewcommand\thefigure{\thesection.\arabic{figure}} 
+
 %
 \section{Visualization examples}
 %
+\setcounter{figure}{0}
+
 \begin{figure}[htbp]
   \centering
-    \includegraphics[width=0.8\textwidth]{images/Cloud}
+     \makebox[\textwidth][c]{\includegraphics[width=1\textwidth]{images/Cloud}}
     \caption{The most frequent stemmed keywords of the used corpus}
   \label{Cloud}
 \end{figure}
 \begin{figure}[htbp]
   \centering
-    \includegraphics[width=0.8\textwidth]{images/AllRelations}
+     \makebox[\textwidth][c]{\includegraphics[width=18cm]{images/AllRelations}}
     \captionsetup{justification=centering}
     \caption{The most significant relations of the used corpus shown \\ as separate nodes (size - Betweenness Centrality, color - Modularity Class)}
   \label{AllRelations}
 \end{figure}
 \begin{figure}[htbp]
   \centering
-    \includegraphics[width=0.8\textwidth]{images/Accusations}
+     \makebox[\textwidth][c]{\includegraphics[width=18cm]{images/Accusations}}
     \captionsetup{justification=centering}
     \caption{The network of ``accuse" relations \\ (size - Eccentricity, color - Inbound Weight)}
   \label{Accusations}
 \end{figure}
 \begin{figure}[htbp]
   \centering
-    \includegraphics[width=0.8\textwidth]{images/KievNetwork}
+  \makebox[\textwidth][c]{\includegraphics[width=18cm]{images/KievNetwork}}%
     \captionsetup{justification=centering}
     \caption{Relational network of the entity ``Kiev", relations shown as labels (size - Eigenvector Centrality, color - Modularity Class)}
   \label{KievNetwork}
