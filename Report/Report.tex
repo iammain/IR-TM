@@ -14,7 +14,7 @@
 \maketitle
 
 \begin{abstract}
-In a world where media coverage is big and one can easily be overflooded information, the need for automatic fact extraction is increasing by the day. News agencies over the world can present the same information under a different perspective, making it difficult for the reader to distinguish facts from opinions. The main goal of this work was to implement a framework that receives data from differently aligned sources and output the subjective facts that are hidden within the data. As a subject topic the highly controversial crisis in Ucraine was chosen, since it created strong opinions and due to that facts where masked behind subjective opinions.
+In a world where media coverage is big and one can easily be over-flooded with information, the need for automatic fact extraction is increasing by the day. News agencies over the world can present the same information under a different perspective, making it difficult for the reader to distinguish facts from opinions. The main goal of this work was to implement a framework that receives data from differently aligned sources and output the subjective facts that are hidden within the data. As a subject topic the highly controversial crisis in Ukraine was chosen, since it created strong opinions and where that facts were masked behind subjective opinions.
 \end{abstract}
 
 %
@@ -22,7 +22,7 @@ In a world where media coverage is big and one can easily be overflooded informa
 %
 Modern news agencies discuss the ongoing events with a great deal of subjectivity and dispute. This may be related to the general complexity of the causal relations in each situation nowadays, but also to the desire to put the events in a different light so that their story sells best. Whichever the reason is it is becoming more and more demanding for the reader to grasp what actually is going on. Especially when it comes to the analysis of the several information sources.
 
-Today it is very popular to discover and evaluate polarity of the opinions on the web by emotional and sentiment mining. This analysis is useful specifically for uncovering of the (mostly author's) attitude towards the situation. However, it does not provide any insight in what exactly was criticized or admired. In other words, it does not provide the context for the overall result, it just presents the attitude.
+Recently it became very popular to discover and evaluate polarity of the opinions on the web by emotional and sentiment mining. This analysis is useful specifically for uncovering of the (mostly author's) attitude towards the situation. However, it does not provide any insight in what exactly was criticized or admired. In other words, it does not provide the context for the overall result, it just presents the attitude.
 
 When a more pragmatic and detailed analysis is needed, fact extraction comes into play. An underlying basis of the present work is the belief that the proper information presentation is free of the emotional flavor, and that each story is comprised of a set of interrelated facts and events. When it comes to understanding the situation, only facts matter.
 
@@ -80,7 +80,7 @@ The two main tools that were researched for the resolution handling were BART~\c
 %
 After all the preprocessing is done, relation extraction techniques can be applied to the document corpus. The corpus consists of text documents that have been cleaned-up in the preprocessing phase. In this work the tool ReVerb was used as a relation extraction tool. It takes as an input all the preprocessed text files and outputs sentences in the form \{\textit{Part 1}\}--\{\textit{Relation}\}--\{\textit{Part 2}\} where the Relation is a verb phrase (VP), as it follows from the tool name, and Parts 1 and 2 are noun phrases (NP).  The verb extracted from the tool is given in its gerund form, meaning that every sentence of where the verb attack is used in the form of:attacked , attacking , has attacked et.c. will be extracted to the gerund form of attack. This is an advantage of the tool since this leads to very homogenous verb relations while having none of the disadvantages stemming would create. 
 
-Furthermore, ReVerb outputs a confidence parameter along with each extracted relation which defines the probability that a relation is correctly extracted. Since there was a need for clean relations in this work, this parameter was set to 0.8 filtering out the relations that were output with smaller confidence and leaving only the correct ones. Once all the relations of the corpus are extracted, the next step was to filter them keeping only relations between entities that exist in the dictionary that was created in the preprocessing phase. Since in this work only inter-entity relations were needed, only sentences that had entities on both parts were considered as valid. Finally, the relations were normalized over the entities which they represented meaning that all the sentences of the form \{\textit{NP}\}--\{\textit{VP}\}--\{\textit{NP}\} where reduced to the form \{\textit{Entity 1}\}--\{\textit{VP}\}--\{\textit{Entity 2}\}. The extraction of the relations from the results, as well as the normalization and string manipulation so that the output is a valid format that can be parsed in Gephi were done using a custom Perl script.
+Furthermore, ReVerb outputs a confidence parameter along with each extracted relation which defines the probability of a correct extraction. Since there was a need for clean relations in this work, this parameter was set to 0.8 filtering out the relations that were output with smaller confidence and leaving only the correct ones. Once all the relations of the corpus are extracted, the next step was to filter them keeping only relations between entities that exist in the dictionary that was created in the preprocessing phase. Since in this work only inter-entity relations were needed, only sentences that had entities on both parts were considered as valid. Finally, the relations were normalized over the entities which they represented meaning that all the sentences of the form \{\textit{NP}\}--\{\textit{VP}\}--\{\textit{NP}\} where reduced to the form \{\textit{Entity 1}\}--\{\textit{VP}\}--\{\textit{Entity 2}\}. The extraction of the relations from the results, as well as the normalization and string manipulation so that the output is a valid format that can be parsed in Gephi were done using a custom Perl script.
 
 Even though for this domain a big confidence threshold was needed for the application to produce correct results, this parameter does not restrict the application since in can be freely modified from the GUI.
 
@@ -112,13 +112,20 @@ After that, KNIME was used for basic visualizations almost on every processing s
   \label{Cloud}
 \end{figure}
 
-The most efficient and meaningful visualizations of the extracted relations were produced by Gephi. Several types of representations were tried in it. It can be noticed that any of the representation tried suits well for the specific tasks. For example, relation types shown as nodes as well works good when the intention is to show the relation-centered graph (see Fig.~\ref{KievNetwork}), which is useful when specific relations are of the major interest (e.g. ``killed", ``accused", etc.). On the other hand, in the more general settings, when the task is more in the identification of what connects the entities together, a visualization where relations are just shown as edge labels works best (see Fig.~\ref{KievNetwork}).
+The most efficient and meaningful visualizations of the extracted relations were produced by Gephi. Several types of representations were tried in it. It can be noticed that any of the representation tried suits well for the specific tasks. For example, relation types shown as nodes as well works good when the intention is to show the relation-centered graph (see Fig.~\ref{KievNetwork}), which is useful when specific relations are of the major interest (e.g. ``killed", ``accused" (see Fig.~\ref{Accusations}), etc.). On the other hand, in the more general settings, when the task is more in the identification of what connects the entities together, a visualization where relations are just shown as edge labels works best (see Fig.~\ref{KievNetwork}).
 \begin{figure}[htbp]
   \centering
     \includegraphics[width=0.8\textwidth]{images/AllRelations}
     \captionsetup{justification=centering}
     \caption{The most significant relations of the used corpus shown \\ as separate nodes (size - Betweenness Centrality, color - Modularity Class)}
   \label{AllRelations}
+\end{figure}
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=0.8\textwidth]{images/Accusations}
+    \captionsetup{justification=centering}
+    \caption{The network of ``accuse" relations \\ (size - Eccentricity, color - Inbound Weight)}
+  \label{Accusations}
 \end{figure}
 \begin{figure}[htbp]
   \centering
